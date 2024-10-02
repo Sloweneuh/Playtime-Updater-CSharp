@@ -69,6 +69,8 @@ namespace PlaytimeUpdater
             // Initialize group boxes
             InitializeGroupBoxes();
 
+            UpdateRadioButtonsAndGroups();
+
             // Set visibility and position of group boxes based on gameList
             SetGroupBoxVisibilityAndPosition();
 
@@ -77,29 +79,14 @@ namespace PlaytimeUpdater
 
         private void InitializeGroupBoxes()
         {
-            foreach (var game in gameList)
-            {
-                if (game.Item1 == "Genshin Impact")
-                {
-                    genshinGroup = CreateGroupBox("Genshin Impact", genshin_registry_path, file_path, 0, out genshinRegistryRadioButton, out genshinTextRadioButton);
-                    this.Controls.Add(genshinGroup);
-                }
-                else if (game.Item1 == "Star Rail")
-                {
-                    starrailGroup = CreateGroupBox("Star Rail", starrail_registry_path, file_path, 1, out starrailRegistryRadioButton, out starrailTextRadioButton);
-                    this.Controls.Add(starrailGroup);
-                }
-                else if (game.Item1 == "Zenless Zone Zero")
-                {
-                    zzzGroup = CreateGroupBox("Zenless Zone Zero", zzz_registry_path, file_path, 2, out zzzRegistryRadioButton, out zzzTextRadioButton);
-                    this.Controls.Add(zzzGroup);
-                }
-                else if (game.Item1 == "Honkai Impact 3rd")
-                {
-                    honkaiGroup = CreateGroupBox("Honkai Impact 3rd", honkai_registry_path, file_path, 3, out honkaiRegistryRadioButton, out honkaiTextRadioButton);
-                    this.Controls.Add(honkaiGroup);
-                }
-            }
+            genshinGroup = CreateGroupBox("Genshin Impact", genshin_registry_path, file_path, 0, out genshinRegistryRadioButton, out genshinTextRadioButton);
+            this.Controls.Add(genshinGroup);
+            starrailGroup = CreateGroupBox("Star Rail", starrail_registry_path, file_path, 1, out starrailRegistryRadioButton, out starrailTextRadioButton);
+            this.Controls.Add(starrailGroup);
+            zzzGroup = CreateGroupBox("Zenless Zone Zero", zzz_registry_path, file_path, 2, out zzzRegistryRadioButton, out zzzTextRadioButton);
+            this.Controls.Add(zzzGroup);
+            honkaiGroup = CreateGroupBox("Honkai Impact 3rd", honkai_registry_path, file_path, 3, out honkaiRegistryRadioButton, out honkaiTextRadioButton);
+            this.Controls.Add(honkaiGroup);
         }
 
         private GroupBox CreateGroupBox(string gameName, string registryPath, string filePath, int line, out RadioButton registryRadioButton, out RadioButton textRadioButton)
@@ -111,27 +98,27 @@ namespace PlaytimeUpdater
 
             registryRadioButton = new RadioButton();
             registryRadioButton.Location = new Point(10, 30);
-            registryRadioButton.Text = RegistryHelper.GetRegistryPlaytimeDisplay(registryPath);
-            Size registryTextSize = MeasureTextSize(registryRadioButton.Text, registryRadioButton.Font);
-            registryRadioButton.Size = new Size(registryTextSize.Width + 100, registryTextSize.Height + 10);
+            // registryRadioButton.Text = RegistryHelper.GetRegistryPlaytimeDisplay(registryPath);
+            // Size registryTextSize = MeasureTextSize(registryRadioButton.Text, registryRadioButton.Font);
+            // registryRadioButton.Size = new Size(registryTextSize.Width + 100, registryTextSize.Height + 10);
             registryRadioButton.UseVisualStyleBackColor = true;
             registryRadioButton.CheckedChanged += new EventHandler(RadioButton_CheckedChanged);
 
             textRadioButton = new RadioButton();
             textRadioButton.Location = new Point(10, 70);
-            textRadioButton.Text = FileHelper.GetTextFilePlaytimeDisplay(line, filePath);
-            Size textSize = MeasureTextSize(textRadioButton.Text, textRadioButton.Font);
-            textRadioButton.Size = new Size(textSize.Width + 100, textSize.Height + 10);
+            // textRadioButton.Text = FileHelper.GetTextFilePlaytimeDisplay(line, filePath);
+            // Size textSize = MeasureTextSize(textRadioButton.Text, textRadioButton.Font);
+            // textRadioButton.Size = new Size(textSize.Width + 100, textSize.Height + 10);
             textRadioButton.UseVisualStyleBackColor = true;
             textRadioButton.CheckedChanged += new EventHandler(RadioButton_CheckedChanged);
-            if (registryTextSize.Width > textSize.Width)
-            {
-                groupBox.Size = new Size(registryRadioButton.Size.Width + 120, 110);
-            }
-            else
-            {
-                groupBox.Size = new Size(textRadioButton.Size.Width + 120, 110);
-            }
+            // if (registryTextSize.Width > textSize.Width)
+            // {
+            //     groupBox.Size = new Size(registryRadioButton.Size.Width + 120, 110);
+            // }
+            // else
+            // {
+            //     groupBox.Size = new Size(textRadioButton.Size.Width + 120, 110);
+            // }
 
             groupBox.Controls.Add(registryRadioButton);
             groupBox.Controls.Add(textRadioButton);
@@ -359,18 +346,22 @@ public void UpdateRadioButtonsAndGroups()
             if (RegistryHelper.CheckRegistryEntry(genshin_registry_path))
             {
                 gameList.Add(("Genshin Impact", genshin_registry_path, 0));
+                Console.WriteLine("Genshin Impact found");
             }
             if (RegistryHelper.CheckRegistryEntry(starrail_registry_path))
             {
                 gameList.Add(("Star Rail", starrail_registry_path, 1));
+                Console.WriteLine("Star Rail found");
             }
             if (RegistryHelper.CheckRegistryEntry(zzz_registry_path))
             {
                 gameList.Add(("Zenless Zone Zero", zzz_registry_path, 2));
+                Console.WriteLine("Zenless Zone Zero found");
             }
             if (RegistryHelper.CheckRegistryEntry(honkai_registry_path))
             {
                 gameList.Add(("Honkai Impact 3rd", honkai_registry_path, 3));
+                Console.WriteLine("Honkai Impact 3rd found");
             }
             return gameList;
         }
