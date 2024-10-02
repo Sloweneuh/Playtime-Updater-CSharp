@@ -273,6 +273,7 @@ namespace PlaytimeUpdater
                 RegistryHelper.SavePlaytimeToRegistry(honkai_registry_path, honkai_text_playtime);
             }
             UpdateRadioButtonsAndGroups();
+            GetPlaytimes();
         }
 
 public void UpdateRadioButtonsAndGroups()
@@ -287,45 +288,48 @@ public void UpdateRadioButtonsAndGroups()
         if (registryRadioButton == null || textRadioButton == null) continue; // Ensure the controls are radio buttons
 
         // Update the text of the radio buttons
-        if (group.Name == "Genshin Impact")
+        if (group.Name == "Genshin Impact" && gameList.Any(game => game.Item1 == "Genshin Impact"))
         {
             registryRadioButton.Text = RegistryHelper.GetRegistryPlaytimeDisplay(genshin_registry_path);
             textRadioButton.Text = FileHelper.GetTextFilePlaytimeDisplay(0, file_path);
         }
-        else if (group.Name == "Star Rail")
+        else if (group.Name == "Star Rail" && gameList.Any(game => game.Item1 == "Star Rail"))
         {
             registryRadioButton.Text = RegistryHelper.GetRegistryPlaytimeDisplay(starrail_registry_path);
             textRadioButton.Text = FileHelper.GetTextFilePlaytimeDisplay(1, file_path);
         }
-        else if (group.Name == "Zenless Zone Zero")
+        else if (group.Name == "Zenless Zone Zero" && gameList.Any(game => game.Item1 == "Zenless Zone Zero"))
         {
             registryRadioButton.Text = RegistryHelper.GetRegistryPlaytimeDisplay(zzz_registry_path);
             textRadioButton.Text = FileHelper.GetTextFilePlaytimeDisplay(2, file_path);
         }
-        else if (group.Name == "Honkai Impact 3rd")
+        else if (group.Name == "Honkai Impact 3rd" && gameList.Any(game => game.Item1 == "Honkai Impact 3rd"))
         {
             registryRadioButton.Text = RegistryHelper.GetRegistryPlaytimeDisplay(honkai_registry_path);
             textRadioButton.Text = FileHelper.GetTextFilePlaytimeDisplay(3, file_path);
         }
 
-        int registryPlaytime = RegistryHelper.ReadPlaytimeFromRegistry(gameList.First(game => game.Item1 == group.Text).Item2);
-        int textPlaytime = FileHelper.ReadPlaytimeFromTextFile(gameList.First(game => game.Item1 == group.Text).Item3, file_path);
-
-        // Update the colors based on playtime comparison
-        if (registryPlaytime > textPlaytime)
+        if (gameList.Any(game => game.Item1 == group.Text))
         {
-            registryRadioButton.ForeColor = Color.Green;
-            textRadioButton.ForeColor = Color.Black;
-        }
-        else if (registryPlaytime < textPlaytime)
-        {
-            textRadioButton.ForeColor = Color.Green;
-            registryRadioButton.ForeColor = Color.Black;
-        }
-        else
-        {
-            registryRadioButton.ForeColor = Color.Black;
-            textRadioButton.ForeColor = Color.Black;
+            int registryPlaytime = RegistryHelper.ReadPlaytimeFromRegistry(gameList.First(game => game.Item1 == group.Text).Item2);
+            int textPlaytime = FileHelper.ReadPlaytimeFromTextFile(gameList.First(game => game.Item1 == group.Text).Item3, file_path);
+        
+            // Update the colors based on playtime comparison
+            if (registryPlaytime > textPlaytime)
+            {
+                registryRadioButton.ForeColor = Color.Green;
+                textRadioButton.ForeColor = Color.Black;
+            }
+            else if (registryPlaytime < textPlaytime)
+            {
+                textRadioButton.ForeColor = Color.Green;
+                registryRadioButton.ForeColor = Color.Black;
+            }
+            else
+            {
+                registryRadioButton.ForeColor = Color.Black;
+                textRadioButton.ForeColor = Color.Black;
+            }
         }
 
         // Measure the text size and update the size of the radio buttons
