@@ -77,15 +77,29 @@ namespace PlaytimeUpdater
 
         private void InitializeGroupBoxes()
         {
-            genshinGroup = CreateGroupBox("Genshin Impact", genshin_registry_path, file_path, 0, out genshinRegistryRadioButton, out genshinTextRadioButton);
-            starrailGroup = CreateGroupBox("Star Rail", starrail_registry_path, file_path, 1, out starrailRegistryRadioButton, out starrailTextRadioButton);
-            zzzGroup = CreateGroupBox("Zenless Zone Zero", zzz_registry_path, file_path, 2, out zzzRegistryRadioButton, out zzzTextRadioButton);
-            honkaiGroup = CreateGroupBox("Honkai Impact 3rd", honkai_registry_path, file_path, 3, out honkaiRegistryRadioButton, out honkaiTextRadioButton);
-
-            this.Controls.Add(genshinGroup);
-            this.Controls.Add(starrailGroup);
-            this.Controls.Add(zzzGroup);
-            this.Controls.Add(honkaiGroup);
+            foreach (var game in gameList)
+            {
+                if (game.Item1 == "Genshin Impact")
+                {
+                    genshinGroup = CreateGroupBox("Genshin Impact", genshin_registry_path, file_path, 0, out genshinRegistryRadioButton, out genshinTextRadioButton);
+                    this.Controls.Add(genshinGroup);
+                }
+                else if (game.Item1 == "Star Rail")
+                {
+                    starrailGroup = CreateGroupBox("Star Rail", starrail_registry_path, file_path, 1, out starrailRegistryRadioButton, out starrailTextRadioButton);
+                    this.Controls.Add(starrailGroup);
+                }
+                else if (game.Item1 == "Zenless Zone Zero")
+                {
+                    zzzGroup = CreateGroupBox("Zenless Zone Zero", zzz_registry_path, file_path, 2, out zzzRegistryRadioButton, out zzzTextRadioButton);
+                    this.Controls.Add(zzzGroup);
+                }
+                else if (game.Item1 == "Honkai Impact 3rd")
+                {
+                    honkaiGroup = CreateGroupBox("Honkai Impact 3rd", honkai_registry_path, file_path, 3, out honkaiRegistryRadioButton, out honkaiTextRadioButton);
+                    this.Controls.Add(honkaiGroup);
+                }
+            }
         }
 
         private GroupBox CreateGroupBox(string gameName, string registryPath, string filePath, int line, out RadioButton registryRadioButton, out RadioButton textRadioButton)
@@ -410,14 +424,29 @@ public void UpdateRadioButtonsAndGroups()
 
         public static void GetPlaytimes()
         {
-            genshin_registry_playtime = RegistryHelper.ReadPlaytimeFromRegistry(genshin_registry_path);
-            genshin_text_playtime = FileHelper.ReadPlaytimeFromTextFile(0, file_path);
-            starrail_registry_playtime = RegistryHelper.ReadPlaytimeFromRegistry(starrail_registry_path);
-            starrail_text_playtime = FileHelper.ReadPlaytimeFromTextFile(1, file_path);
-            zzz_registry_playtime = RegistryHelper.ReadPlaytimeFromRegistry(zzz_registry_path);
-            zzz_text_playtime = FileHelper.ReadPlaytimeFromTextFile(2, file_path);
-            honkai_registry_playtime = RegistryHelper.ReadPlaytimeFromRegistry(honkai_registry_path);
-            honkai_text_playtime = FileHelper.ReadPlaytimeFromTextFile(3, file_path);
+            foreach (var game in gameList)
+            {
+                if (game.Item1 == "Genshin Impact")
+                {
+                    genshin_registry_playtime = RegistryHelper.ReadPlaytimeFromRegistry(genshin_registry_path);
+                    genshin_text_playtime = FileHelper.ReadPlaytimeFromTextFile(0, file_path);
+                }
+                else if (game.Item1 == "Star Rail")
+                {
+                    starrail_registry_playtime = RegistryHelper.ReadPlaytimeFromRegistry(starrail_registry_path);
+                    starrail_text_playtime = FileHelper.ReadPlaytimeFromTextFile(1, file_path);
+                }
+                else if (game.Item1 == "Zenless Zone Zero")
+                {
+                    zzz_registry_playtime = RegistryHelper.ReadPlaytimeFromRegistry(zzz_registry_path);
+                    zzz_text_playtime = FileHelper.ReadPlaytimeFromTextFile(2, file_path);
+                }
+                else if (game.Item1 == "Honkai Impact 3rd")
+                {
+                    honkai_registry_playtime = RegistryHelper.ReadPlaytimeFromRegistry(honkai_registry_path);
+                    honkai_text_playtime = FileHelper.ReadPlaytimeFromTextFile(3, file_path);
+                }
+            }
         }
 
         private Size MeasureTextSize(string text, Font font)
