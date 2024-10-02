@@ -31,6 +31,10 @@ namespace PlaytimeUpdater
                 {
                     CreateDefaultFile();
                 }
+                else if (!File.Exists(filePath))
+                {
+                    File.CreateText(filePath).Close();
+                }
                 string[] lines = File.ReadAllLines(filePath);
                 if (lines.Length <= line)
                 {
@@ -38,13 +42,7 @@ namespace PlaytimeUpdater
                 }
                 lines[line] = value.ToString();
                 File.WriteAllLines(filePath, lines);
-                Console.WriteLine("Successfully wrote to playtime.txt");
-            }
-            //if the file doesn't exist, create it
-            catch (FileNotFoundException)
-            {
-                File.WriteAllText(filePath, value.ToString());
-                Console.WriteLine("Successfully created playtime.txt");
+                Console.WriteLine($"Successfully wrote to {filePath.Split('\\')[filePath.Split('\\').Length - 1]}");
             }
             catch (Exception ex)
             {

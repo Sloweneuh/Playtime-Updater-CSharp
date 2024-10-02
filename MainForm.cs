@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.Linq;
 using Microsoft.Win32;
 using System.Data;
+using System.IO;
 
 namespace PlaytimeUpdater
 {
@@ -398,6 +399,10 @@ public void UpdateRadioButtonsAndGroups()
             {
                 string filePath = key.GetValue(RegistryValueName).ToString();
                 key.Close();
+                if (!File.Exists(filePath))
+                {
+                    return default_file_path;
+                }
                 return filePath;
             }
             return default_file_path;
