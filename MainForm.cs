@@ -6,6 +6,8 @@ using System.Linq;
 using Microsoft.Win32;
 using System.Data;
 using System.IO;
+using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 
 namespace PlaytimeUpdater
 {
@@ -24,21 +26,80 @@ namespace PlaytimeUpdater
             this.filePathLabel = new Label();
             this.SuspendLayout();
 
+            // Load images and fonts
+            this.GIBackgroundImage = Image.FromFile(Path.Combine(projectRoot, "assets", "GI_Background.jpeg"));
+            this.HI3BackgroundImage = Image.FromFile(Path.Combine(projectRoot, "assets", "HI3_Background.jpeg"));
+            this.ZZZBackgroundImage = Image.FromFile(Path.Combine(projectRoot, "assets", "ZZZ_Background.jpeg"));
+            this.HSRBackgroundImage = Image.FromFile(Path.Combine(projectRoot, "assets", "HSR_Background.jpeg"));
+            this.backgroundImage = Image.FromFile(Path.Combine(projectRoot, "assets", "Background.jpeg"));
+            this.genshinFont.AddFontFile(Path.Combine(projectRoot, "assets", "zh-cn.ttf"));
+
             // updateButton
             this.updateButton.Location = new System.Drawing.Point(100, 200);
             this.updateButton.Name = "updateButton";
             this.updateButton.Size = new System.Drawing.Size(200, 50);
             this.updateButton.TabIndex = 0;
             this.updateButton.Text = "Update Playtime";
-            this.updateButton.UseVisualStyleBackColor = true;
+            this.updateButton.UseVisualStyleBackColor = false;
+            this.updateButton.BackColor = Color.FromArgb(70, 130, 160, 180);
+            this.updateButton.ForeColor = Color.White;
+            this.updateButton.FlatStyle = FlatStyle.Flat;
+            this.updateButton.FlatAppearance.BorderSize = 0;
+            this.updateButton.Font = new Font(genshinFont.Families[0], 10, FontStyle.Bold);
+            this.updateButton.Cursor = Cursors.Hand;
             this.updateButton.Click += new System.EventHandler(this.UpdateButton_Click);
+            this.updateButton.MouseEnter += (s, e) => { this.updateButton.BackColor = Color.FromArgb(70, 100, 150, 180); };
+
+
+            // Custom painting for round edges
+            this.updateButton.Paint += (s, e) =>
+            {
+                Button btn = s as Button;
+                if (btn != null)
+                {
+                    e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                    using (GraphicsPath path = new GraphicsPath())
+                    {
+                        path.AddArc(0, 0, 20, 20, 180, 90);
+                        path.AddArc(btn.Width - 21, 0, 20, 20, 270, 90);
+                        path.AddArc(btn.Width - 21, btn.Height - 21, 20, 20, 0, 90);
+                        path.AddArc(0, btn.Height - 21, 20, 20, 90, 90);
+                        path.CloseAllFigures();
+                        btn.Region = new Region(path);
+                        e.Graphics.DrawPath(Pens.Transparent, path);
+                    }
+                }
+            };
             
             // filePathLabel
             this.filePathLabel.Location = new System.Drawing.Point(10, 20);
             this.filePathLabel.Name = "filePath";
             this.filePathLabel.Text = "File Path: " + file_path;
+            this.filePathLabel.Font = new Font(genshinFont.Families[0], 10, FontStyle.Regular);
             Size textSize = TextRenderer.MeasureText(filePathLabel.Text, filePathLabel.Font);
             this.filePathLabel.Size = new System.Drawing.Size(textSize.Width, textSize.Height);
+
+            // Custom painting for round edges
+            this.filePathLabel.Paint += (s, e) =>
+            {
+                Label lbl = s as Label;
+                if (lbl != null)
+                {
+                    e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                    using (GraphicsPath path = new GraphicsPath())
+                    {
+                        path.AddArc(0, 0, 20, 20, 180, 90);
+                        path.AddArc(lbl.Width - 21, 0, 20, 20, 270, 90);
+                        path.AddArc(lbl.Width - 21, lbl.Height - 21, 20, 20, 0, 90);
+                        path.AddArc(0, lbl.Height - 21, 20, 20, 90, 90);
+                        path.CloseAllFigures();
+                        lbl.Region = new Region(path);
+                        e.Graphics.DrawPath(Pens.Transparent, path);
+                    }
+                }
+            };
+
+
             
             // selectFile
             this.selectFile.Location = new System.Drawing.Point(textSize.Width + 10, 20);
@@ -66,6 +127,12 @@ namespace PlaytimeUpdater
             this.Text = "Playtime Updater";
             this.ResumeLayout(false);
 
+            // Set form background image
+            BackgroundImage = backgroundImage;
+            BackgroundImageLayout = ImageLayout.Stretch;
+
+            this.IconImage = Image.FromFile(Path.Combine(projectRoot, "assets", "Icon_note.png"));
+
             // Initialize group boxes
             InitializeGroupBoxes();
 
@@ -79,57 +146,72 @@ namespace PlaytimeUpdater
 
         private void InitializeGroupBoxes()
         {
-            genshinGroup = CreateGroupBox("Genshin Impact", genshin_registry_path, file_path, 0, out genshinRegistryRadioButton, out genshinTextRadioButton);
+            genshinGroup = CreateGroupBox("Genshin Impact", genshin_registry_path, file_path, 0, out genshinRegistryRadioButton, out genshinTextRadioButton, GIBackgroundImage);
             this.Controls.Add(genshinGroup);
-            starrailGroup = CreateGroupBox("Star Rail", starrail_registry_path, file_path, 1, out starrailRegistryRadioButton, out starrailTextRadioButton);
+            starrailGroup = CreateGroupBox("Star Rail", starrail_registry_path, file_path, 1, out starrailRegistryRadioButton, out starrailTextRadioButton, HSRBackgroundImage);
             this.Controls.Add(starrailGroup);
-            zzzGroup = CreateGroupBox("Zenless Zone Zero", zzz_registry_path, file_path, 2, out zzzRegistryRadioButton, out zzzTextRadioButton);
+            zzzGroup = CreateGroupBox("Zenless Zone Zero", zzz_registry_path, file_path, 2, out zzzRegistryRadioButton, out zzzTextRadioButton, ZZZBackgroundImage);
             this.Controls.Add(zzzGroup);
-            honkaiGroup = CreateGroupBox("Honkai Impact 3rd", honkai_registry_path, file_path, 3, out honkaiRegistryRadioButton, out honkaiTextRadioButton);
+            honkaiGroup = CreateGroupBox("Honkai Impact 3rd", honkai_registry_path, file_path, 3, out honkaiRegistryRadioButton, out honkaiTextRadioButton, HI3BackgroundImage);
             this.Controls.Add(honkaiGroup);
         }
 
-        private GroupBox CreateGroupBox(string gameName, string registryPath, string filePath, int line, out RadioButton registryRadioButton, out RadioButton textRadioButton)
+        private GroupBox CreateGroupBox(string gameName, string registryPath, string filePath, int line, out RadioButton registryRadioButton, out RadioButton textRadioButton, Image backgroundImage)
         {
             GroupBox groupBox = new GroupBox();
             groupBox.Name = gameName;
-            groupBox.Text = gameName;
-            groupBox.Size = new Size(250, 110);
+            //groupBox.Text = gameName;
+            groupBox.MinimumSize = new Size(500, 110);
+            groupBox.Font = new Font(genshinFont.Families[0], 10, FontStyle.Bold);
+            groupBox.ForeColor = Color.FromArgb(100, 111, 64, 64);
+            groupBox.BackColor = Color.FromArgb(70, 255, 255, 255);
+
+            // Scale the background image to fit the group box
+            Bitmap scaledBackgroundImage = new Bitmap(backgroundImage, new Size(groupBox.Width, backgroundImage.Height * groupBox.Width / backgroundImage.Width));
+            groupBox.BackgroundImage = scaledBackgroundImage;
+
+            // Custom painting for round edges
+            groupBox.Paint += (s, e) =>
+            {
+                GroupBox box = s as GroupBox;
+                if (box != null)
+                {
+                    e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                    using (GraphicsPath path = new GraphicsPath())
+                    {
+                        path.AddArc(0, 0, 20, 20, 180, 90);
+                        path.AddArc(box.Width - 21, 0, 20, 20, 270, 90);
+                        path.AddArc(box.Width - 21, box.Height - 21, 20, 20, 0, 90);
+                        path.AddArc(0, box.Height - 21, 20, 20, 90, 90);
+                        path.CloseAllFigures();
+                        box.Region = new Region(path);
+                        e.Graphics.DrawPath(Pens.Black, path);
+                    }
+                }
+            };
 
             registryRadioButton = new RadioButton();
             registryRadioButton.Location = new Point(10, 30);
-            // registryRadioButton.Text = RegistryHelper.GetRegistryPlaytimeDisplay(registryPath);
-            // Size registryTextSize = MeasureTextSize(registryRadioButton.Text, registryRadioButton.Font);
-            // registryRadioButton.Size = new Size(registryTextSize.Width + 100, registryTextSize.Height + 10);
             registryRadioButton.UseVisualStyleBackColor = true;
+            registryRadioButton.BackColor = Color.FromArgb(70, 255, 255, 255);
             registryRadioButton.CheckedChanged += new EventHandler(RadioButton_CheckedChanged);
 
             textRadioButton = new RadioButton();
             textRadioButton.Location = new Point(10, 70);
-            // textRadioButton.Text = FileHelper.GetTextFilePlaytimeDisplay(line, filePath);
-            // Size textSize = MeasureTextSize(textRadioButton.Text, textRadioButton.Font);
-            // textRadioButton.Size = new Size(textSize.Width + 100, textSize.Height + 10);
+            textRadioButton.BackColor = Color.FromArgb(70, 255, 255, 255);
             textRadioButton.UseVisualStyleBackColor = true;
             textRadioButton.CheckedChanged += new EventHandler(RadioButton_CheckedChanged);
-            // if (registryTextSize.Width > textSize.Width)
-            // {
-            //     groupBox.Size = new Size(registryRadioButton.Size.Width + 120, 110);
-            // }
-            // else
-            // {
-            //     groupBox.Size = new Size(textRadioButton.Size.Width + 120, 110);
-            // }
 
             groupBox.Controls.Add(registryRadioButton);
             groupBox.Controls.Add(textRadioButton);
-
+            
             return groupBox;
         }
 
         private void SetGroupBoxVisibilityAndPosition()
         {
             int yOffset = 50; // Initial Y offset
-            int ySpacing = 110; // Spacing between group boxes
+            int ySpacing = 120; // Spacing between group boxes
 
             // Set visibility and position for Genshin Impact
             if (gameList.Any(game => game.Item1 == "Genshin Impact"))
@@ -190,6 +272,16 @@ namespace PlaytimeUpdater
 
             // Set form height based on number of visible group boxes
             this.ClientSize = new System.Drawing.Size(fileSelectionGroup.Size.Width+200, yOffset + 100);
+            PictureBox iconPictureBox = new PictureBox()
+            {
+                Image = IconImage,
+                Size = new Size(150, 150),
+                Location = new Point(fileSelectionGroup.Size.Width, yOffset / 2),
+                SizeMode = PictureBoxSizeMode.Zoom,
+                BackColor = Color.Transparent
+            };
+
+            this.Controls.Add(iconPictureBox);
         }
 
         void RadioButton_CheckedChanged(object sender, EventArgs e)
@@ -497,5 +589,20 @@ public void UpdateRadioButtonsAndGroups()
         private string starrail_selected="";
         private string zzz_selected="";
         private string honkai_selected="";
+
+        private string projectRoot = Directory.GetParent(Application.StartupPath).Parent.Parent.Parent.FullName;
+
+        private Image GIBackgroundImage;
+        private Image HI3BackgroundImage;
+        private Image ZZZBackgroundImage;
+        private Image HSRBackgroundImage;   
+        private Image backgroundImage;
+
+        private Image IconImage;
+
+        public PrivateFontCollection genshinFont = new PrivateFontCollection();
+
+        // TODO
+        // public string img_Collapse_path = @"AppData\LocalLow\CollapseLauncher\GameFolder\_img\bg";
     }
 }
